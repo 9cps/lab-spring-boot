@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pwm-redis
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pwm-redis
+  template:
+    metadata:
+      labels:
+        app: pwm-redis
+    spec:
+      containers:
+        - name: redis
+          image: redis:7
+          ports:
+            - containerPort: 6379
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pwm-redis
+spec:
+  selector:
+    app: pwm-redis
+  ports:
+    - port: 6379
+      targetPort: 6379
+  clusterIP: None

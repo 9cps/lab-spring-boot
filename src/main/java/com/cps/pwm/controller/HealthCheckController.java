@@ -4,6 +4,8 @@ import com.cps.pwm.service.HealthCheckService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,5 +26,11 @@ public class HealthCheckController {
         status.put("database", healthCheckService.isDatabaseUp() ? "UP" : "DOWN");
 
         return ResponseEntity.ok(status);
+    }
+
+    @GetMapping("/debug-hostname")
+    public String debugHostname() throws UnknownHostException {
+        String hostname = InetAddress.getLocalHost().getHostName();
+        return "Hostname: " + hostname;
     }
 }

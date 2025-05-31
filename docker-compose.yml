@@ -3,7 +3,7 @@ version: '3.8'
 services:
   postgres:
     image: postgres:15
-    container_name: project_postgres
+    container_name: pwm_postgres
     restart: unless-stopped
     environment:
       POSTGRES_DB: myapp_db
@@ -16,22 +16,27 @@ services:
 
   redis:
     image: redis:7
-    container_name: project_redis
+    container_name: pwm_redis
     restart: unless-stopped
     ports:
       - "6379:6379"
 
-  pgadmin:
-    image: dpage/pgadmin4
-    container_name: project_pgadmin
-    restart: unless-stopped
-    environment:
-      PGADMIN_DEFAULT_EMAIL: admin@example.com
-      PGADMIN_DEFAULT_PASSWORD: admin
+  app:
+    build: .
+    image: 9cps/pwm-service:latest
+    container_name: pwm_app
     ports:
-      - "8081:80"
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=local
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/myapp_db
+      - SPRING_DATASOURCE_USERNAME=myapp_user
+      - SPRING_DATASOURCE_PASSWORD=myapp_password
+      - SPRING_REDIS_HOST=redis
+      - SPRING_REDIS_PORT=6379
     depends_on:
       - postgres
+      - redis
 
 volumes:
   postgres_data:
