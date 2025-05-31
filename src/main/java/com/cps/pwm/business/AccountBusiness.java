@@ -8,18 +8,22 @@ import com.cps.pwm.model.User;
 import com.cps.pwm.service.AccountService;
 import com.cps.pwm.service.TransactionService;
 import com.cps.pwm.service.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Component
 public class AccountBusiness {
     private final AccountService accountService;
     private final UserService userService;
     private final TransactionService transactionService;
+    private static final Logger log = LoggerFactory.getLogger(AccountBusiness.class);
+    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
 
     public AccountBusiness(AccountService accountService, UserService userService, TransactionService transactionService) {
         this.accountService = accountService;
@@ -46,7 +50,8 @@ public class AccountBusiness {
 
     public AccountResponse findAllAccountByUserId(Long userId) {
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        log.info("findAllAccountByUserId start at {} with id: {}", LocalDateTime.now().format(formatter), userId);
+
         User user = userService.getUserById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found with id: " + userId));
 
@@ -77,6 +82,7 @@ public class AccountBusiness {
                     .build();
         }).toList();
 
+        log.info("findAllAccountByUserId end at {} with id: {}", LocalDateTime.now().format(formatter), userId);
         return AccountResponse.builder()
                 .userId(user.getId())
                 .email(user.getEmail())
